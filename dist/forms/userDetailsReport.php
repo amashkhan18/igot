@@ -2,18 +2,28 @@
 // Include the database connection file
 require_once '../../config/database.php';
 
-// The SQL query
-$sql = "SELECT External_System_Id, MAX(Total_Completions) AS Largest_Total_Completions FROM userreport GROUP BY External_System_Id ORDER BY `userreport`.`External_System_Id` ASC";
+// Check if External_System_Id is set in the URL
+if (!isset($_GET['External_System_Id']) || empty($_GET['External_System_Id'])) {
+    die("External System ID is required.");
+}
 
-// Execute the query
-$result = $conn->query($sql);
+$external_system_id = $_GET['External_System_Id'];
+
+// The SQL query using a prepared statement
+$sql = "SELECT `Full_Name`, `Designation`, `Phone_Number`, `Employee_Id`, `Total_Enrolments`, `Total_Completions`, `Total_Learning_Hours` FROM `userreport` WHERE `External_System_Id` = ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $external_system_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
 ?>
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DDO Report</title>
+    <title>User Details Report</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
@@ -23,7 +33,7 @@ $result = $conn->query($sql);
     <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
     <!--begin::Primary Meta Tags-->
-    <meta name="title" content="AdminLTE v4 | DDO Report" />
+    <meta name="title" content="AdminLTE v4 | User Details Report" />
     <meta name="author" content="ColorlibHQ" />
     <meta
       name="description"
@@ -110,11 +120,11 @@ $result = $conn->query($sql);
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">DDO Report</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">User Details Report</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">DDO Report</li>
+                  <li class="breadcrumb-item active" aria-current="page">User Details Report</li>
                 </ol>
               </div>
             </div>
@@ -131,15 +141,20 @@ $result = $conn->query($sql);
                 <div class="col-12">
                     <div class="card card-primary card-outline">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-chart-bar"></i> User Completions Report</h3>
+                            <h3 class="card-title"><i class="fas fa-users"></i> User Details for External System ID: <?php echo htmlspecialchars($external_system_id); ?></h3>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
-                            <table id="ddoReportTable" class="table table-bordered table-striped table-hover">
+                            <table id="userDetailsTable" class="table table-bordered table-striped table-hover">
                                 <thead>
                                 <tr>
-                                    <th><i class="fas fa-id-card"></i> DDO Code</th>
-                                    <th><i class="fas fa-trophy"></i> No. of certificates highest achiever employee get</th>
+                                    <th><i class="fas fa-user"></i> Full Name</th>
+                                    <th><i class="fas fa-briefcase"></i> Designation</th>
+                                    <th><i class="fas fa-phone"></i> Phone Number</th>
+                                    <th><i class="fas fa-id-badge"></i> Employee ID</th>
+                                    <th><i class="fas fa-tasks"></i> Total Enrolments</th>
+                                    <th><i class="fas fa-check-circle"></i> Total Completions</th>
+                                    <th><i class="fas fa-clock"></i> Total Learning Hours</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -147,10 +162,18 @@ $result = $conn->query($sql);
                                 if ($result->num_rows > 0) {
                                     // Output data of each row
                                     while($row = $result->fetch_assoc()) {
-                                        echo "<tr><td><a href=\"userDetailsReport.php?External_System_Id=" . $row["External_System_Id"] . "\">" . $row["External_System_Id"] . "</a></td><td>" . $row["Largest_Total_Completions"]. "</td></tr>";
+                                        echo "<tr>";
+                                        echo "<td>" . $row["Full_Name"] . "</td>";
+                                        echo "<td>" . $row["Designation"] . "</td>";
+                                        echo "<td>" . $row["Phone_Number"] . "</td>";
+                                        echo "<td>" . $row["Employee_Id"] . "</td>";
+                                        echo "<td>" . $row["Total_Enrolments"] . "</td>";
+                                        echo "<td>" . $row["Total_Completions"] . "</td>";
+                                        echo "<td>" . $row["Total_Learning_Hours"] . "</td>";
+                                        echo "</tr>";
                                     }
                                 } else {
-                                    echo "<tr><td colspan='2'>No results found</td></tr>";
+                                    echo "<tr><td colspan='7'>No results found</td></tr>";
                                 }
                                 ?>
                                 </tbody>
@@ -217,16 +240,17 @@ $result = $conn->query($sql);
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
     <script>
         $(function () {
-            $("#ddoReportTable").DataTable({
+            $("#userDetailsTable").DataTable({
                 "responsive": true,
                 "lengthChange": false,
                 "autoWidth": false,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#ddoReportTable_wrapper .col-md-6:eq(0)');
+            }).buttons().container().appendTo('#userDetailsTable_wrapper .col-md-6:eq(0)');
         });
     </script>
   </body>
 </html>
 <?php
+$stmt->close();
 $conn->close();
 ?>
