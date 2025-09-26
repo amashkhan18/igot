@@ -1,17 +1,5 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "test"; // Replace with your database name
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));
-}
-
+require_once '../config/database.php'; // Include database connection
 // Fetch EMP_DISPLAY_CODE from the request
 $empDisplayCode = isset($_GET['EMP_DISPLAY_CODE']) ? $_GET['EMP_DISPLAY_CODE'] : null;
 
