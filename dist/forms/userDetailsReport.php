@@ -105,8 +105,8 @@ $result = $stmt->get_result();
                 <i class="bi bi-list"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-md-block"><a href="newreg.php" class="nav-link">New Registration</a></li>
-            <li class="nav-item d-none d-md-block"><a href="ddoReport.php" class="nav-link">DDO wise achiever Report</a></li>
+            <li class="nav-item"><a href="newreg.php" class="nav-link">New Registration</a></li>
+            <li class="nav-item"><a href="ddoReport.php" class="nav-link">DDO wise achiever Report</a></li>
           </ul>
           <!--end::Start Navbar Links-->
           <!--begin::End Navbar Links-->
