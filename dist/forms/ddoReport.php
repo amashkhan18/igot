@@ -1,4 +1,17 @@
 <?php
+// Check if the user is logged in by verifying the cookie
+if (!isset($_COOKIE['user_id'])) {
+    header("Location: ./login.html"); // Updated to point to the correct login.html file
+    exit;
+}
+
+// Handle logout request
+if (isset($_GET['logout'])) {
+    setcookie("user_id", "", time() - 3600, "/"); // Expire the cookie
+    header("Location: ./login.html?logout=1"); // Updated to point to the correct login.html file
+    exit;
+}
+
 // Include the database connection file
 require_once '../../config/database.php';
 
