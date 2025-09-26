@@ -184,7 +184,7 @@ $conn->close();
           <div class="container-fluid">
             <div class="container mt-5">
 
-      <h1 class="text-center mb-4">New Karmyogi Registrations</h1>
+      <h1 class="text-center mb-4">New iGOT Karmyogi Registrations</h1>
       <form id="registrationForm" method="POST" action="">
       <div class="mb-3">
           <label for="employeeCode" class="form-label">Employee Code</label>
